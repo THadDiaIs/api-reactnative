@@ -145,7 +145,6 @@ export class ApiService {
             handlers[payload.evento]?.(payload.datos);
           }
         } catch {
-          // Ignore malformed WebSocket frames
         }
       };
 

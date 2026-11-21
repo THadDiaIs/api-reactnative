@@ -13,8 +13,15 @@ export class ApiError extends Error {
 }
 
 const TOKEN_STORAGE_KEY = 'token';
-const DEFAULT_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://10.0.2.2:5000';
+const DEFAULT_BASE_URL = 'https://api-stock-next.onrender.com';
+const WS_URL = 'wss://api-stock-next.onrender.com/ws';
 const DEFAULT_TIMEOUT_MS = 65000;
+
+export interface RealtimeHandlers {
+  OrdenCreada?: (datos: unknown) => void;
+  OrdenActualizada?: (datos: unknown) => void;
+  StockBajo?: (datos: unknown) => void;
+}
 
 interface ApiErrorBody {
   mensaje?: string;
@@ -117,6 +124,47 @@ export class ApiService {
       method: 'POST',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
+  }
+
+  conectarTiempoReal(handlers: RealtimeHandlers): () => void {
+    let ws: WebSocket | null = null;
+    let cerrado = false;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const conectar = () => {
+      if (cerrado || !this.token) return;
+      ws = new WebSocket(`${WS_URL}?access_token=${encodeURIComponent(this.token)}`);
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(String(event.data)) as {
+            evento?: keyof RealtimeHandlers;
+            datos?: unknown;
+          };
+          if (payload.evento) {
+            handlers[payload.evento]?.(payload.datos);
+          }
+        } catch {
+          // Ignore malformed WebSocket frames
+        }
+      };
+
+      ws.onclose = () => {
+        if (!cerrado) {
+          reconnectTimer = setTimeout(conectar, 5000);
+        }
+      };
+    };
+
+    conectar();
+
+    return () => {
+      cerrado = true;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+      }
+      ws?.close();
+    };
   }
 }
 

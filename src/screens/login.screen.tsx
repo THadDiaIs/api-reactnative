@@ -66,7 +66,7 @@ export function LoginScreen() {
               <TextInput
                 value={nombreUsuario}
                 onChangeText={setNombreUsuario}
-                placeholder="admin"
+                placeholder="pedidos"
                 placeholderTextColor={theme.textSecondary}
                 autoCapitalize="none"
                 autoCorrect={false}

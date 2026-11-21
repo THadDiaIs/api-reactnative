@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,7 +14,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { authService, Orden, OrdenEstado, pedidosService } from '@/services';
+import { apiService, authService, Orden, OrdenEstado, pedidosService } from '@/services';
 
 type FiltroEstado = 'Todas' | OrdenEstado;
 
@@ -69,6 +69,28 @@ export function ListadoPedidosScreen() {
       cargarOrdenes(false);
     }, [cargarOrdenes])
   );
+
+  useEffect(() => {
+    const desconectar = apiService.conectarTiempoReal({
+      OrdenCreada: (datos) => {
+        const orden = datos as Orden;
+        if (filtro !== 'Todas' && orden.estado !== filtro) return;
+        setOrdenes((lista) => [orden, ...lista.filter((o) => o.ordenId !== orden.ordenId)]);
+      },
+      OrdenActualizada: (datos) => {
+        const orden = datos as Orden;
+        setOrdenes((lista) => {
+          const actualizada = lista.map((o) => (o.ordenId === orden.ordenId ? orden : o));
+          if (filtro !== 'Todas') {
+            return actualizada.filter((o) => o.estado === filtro);
+          }
+          return actualizada;
+        });
+      },
+    });
+
+    return desconectar;
+  }, [filtro]);
 
   const toggleDetalle = (ordenId: number) => {
     setExpandedId((prev) => (prev === ordenId ? null : ordenId));

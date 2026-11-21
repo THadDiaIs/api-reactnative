@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,7 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { InventarioItem, pedidosService } from '@/services';
+import { apiService, InventarioItem, pedidosService } from '@/services';
 
 export function CreacionPedidosScreen() {
   const theme = useTheme();
@@ -52,6 +52,15 @@ export function CreacionPedidosScreen() {
       cargarInventario(false);
     }, [cargarInventario])
   );
+
+  useEffect(() => {
+    const desconectar = apiService.conectarTiempoReal({
+      StockBajo: () => {
+        cargarInventario(true);
+      },
+    });
+    return desconectar;
+  }, [cargarInventario]);
 
   const ajustarCantidad = (item: InventarioItem, delta: number) => {
     setCantidades((prev) => {

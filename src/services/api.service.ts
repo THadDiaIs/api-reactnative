@@ -13,8 +13,8 @@ export class ApiError extends Error {
 }
 
 const TOKEN_STORAGE_KEY = 'token';
-const DEFAULT_BASE_URL = 'https://api-stock-next.onrender.com';
-const WS_URL = 'wss://api-stock-next.onrender.com/ws';
+const DEFAULT_BASE_URL = 'https://api-stock-nex.onrender.com';
+const WS_URL = 'wss://api-stock-nex.onrender.com/ws';
 const DEFAULT_TIMEOUT_MS = 65000;
 
 export interface RealtimeHandlers {

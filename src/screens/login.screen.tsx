@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -52,7 +53,14 @@ export function LoginScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboardView}>
           <ThemedView style={styles.headerSection}>
-            <ThemedText type="title" style={styles.title}>
+            <View style={styles.logoWrap}>
+              <Image
+                source={require('@/assets/images/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+            <ThemedText type="title" style={[styles.title, { color: theme.primary }]}>
               StockNex
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
@@ -100,13 +108,16 @@ export function LoginScreen() {
               onPress={handleLogin}
               style={({ pressed }) => [
                 styles.submitButton,
+                { backgroundColor: theme.primary },
                 loading && styles.disabled,
                 pressed && styles.pressed,
               ]}>
               {loading ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={theme.onPrimary} />
               ) : (
-                <ThemedText style={styles.submitText}>Iniciar sesión</ThemedText>
+                <ThemedText style={[styles.submitText, { color: theme.onPrimary }]}>
+                  Iniciar sesión
+                </ThemedText>
               )}
             </Pressable>
           </ThemedView>
@@ -135,6 +146,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.one,
   },
+  logoWrap: {
+    width: 132,
+    height: 132,
+    borderRadius: 36,
+    backgroundColor: '#FBF8F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.two,
+  },
+  logo: {
+    width: 104,
+    height: 104,
+  },
   title: {
     textAlign: 'center',
   },
@@ -156,14 +180,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: '#2563EB',
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
     alignItems: 'center',
     marginTop: Spacing.one,
   },
   submitText: {
-    color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
   },

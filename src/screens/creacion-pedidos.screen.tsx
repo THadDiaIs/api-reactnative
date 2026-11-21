@@ -18,6 +18,10 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { apiService, InventarioItem, pedidosService } from '@/services';
 
+function formatCantidad(valor: number): string {
+  return String(valor).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 export function CreacionPedidosScreen() {
   const theme = useTheme();
   const [cliente, setCliente] = useState('');
@@ -132,7 +136,7 @@ export function CreacionPedidosScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <ThemedView style={styles.headerSection}>
           <ThemedText type="subtitle" style={styles.title}>
             Creación de pedidos
@@ -199,7 +203,7 @@ export function CreacionPedidosScreen() {
                   <View style={styles.productInfo}>
                     <ThemedText type="smallBold">{item.nombre}</ThemedText>
                     <ThemedText type="small" themeColor="textSecondary">
-                      Q {item.precio.toFixed(2)} · Disponible: {item.existencia}
+                      Q {item.precio.toFixed(2)} · Disponible: {formatCantidad(item.existencia)}
                     </ThemedText>
                   </View>
 
@@ -251,14 +255,16 @@ export function CreacionPedidosScreen() {
             onPress={handleCrearPedido}
             style={({ pressed }) => [
               styles.submitButton,
-              { backgroundColor: '#2563EB' },
+              { backgroundColor: theme.primary },
               submitting && styles.disabled,
               pressed && styles.pressed,
             ]}>
             {submitting ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={theme.onPrimary} />
             ) : (
-              <ThemedText style={styles.submitText}>Crear pedido</ThemedText>
+              <ThemedText style={[styles.submitText, { color: theme.onPrimary }]}>
+                Crear pedido
+              </ThemedText>
             )}
           </Pressable>
         </ThemedView>
@@ -341,7 +347,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitText: {
-    color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 14,
   },

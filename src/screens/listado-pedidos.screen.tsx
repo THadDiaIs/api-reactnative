@@ -103,7 +103,7 @@ export function ListadoPedidosScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <ThemedView style={styles.headerSection}>
           <View style={styles.titleRow}>
             <ThemedText type="subtitle" style={styles.title}>
@@ -132,13 +132,13 @@ export function ListadoPedidosScreen() {
                   style={({ pressed }) => [
                     styles.filtroChip,
                     {
-                      backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement,
+                      backgroundColor: selected ? theme.primary : theme.backgroundElement,
                     },
                     pressed && styles.pressed,
                   ]}>
                   <ThemedText
                     type="small"
-                    themeColor={selected ? 'text' : 'textSecondary'}
+                    themeColor={selected ? 'onPrimary' : 'textSecondary'}
                     style={selected ? styles.filtroTextSelected : undefined}>
                     {item}
                   </ThemedText>
